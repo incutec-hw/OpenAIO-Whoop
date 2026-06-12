@@ -48,7 +48,8 @@ All libraries project-local; KiCad standard libs are the only external reference
 | Function | Part | LCSC | Note |
 |---|---|---|---|
 | ESC MCU ×4 | EFM8BB51F16G-C-QFN20R (8051, 50 MHz) | C6547511 | Bluejay BB51 target; not in JLC assembly lib — verify/consign |
-| Power stage | DMC1229UFDB-7 complementary N+P, U-DFN2020-6 (2×2 mm), ×3/channel, GPIO direct drive | C443653 | 12 V, N 29 mΩ/P 61 mΩ @4.5 V; ~2.5 A cont/5 A burst per phase. Fallback: AON2406+YJQ1216A discrete pair |
+| Power stage (option A) | SiA527DJ complementary N+P, PowerPAK SC-70-6 (2×2 mm), ×3/channel, GPIO direct drive | C222486 | 12 V, N 29/P 41 mΩ @4.5 V, spec'd to 1.5 V gate — best dual at 2×2 |
+| Power stage (option B) | AON2406 (N) + YJQ1216A (P) discrete pair, DFN2020 ×6/channel | C3277752 / C919545 | N 12.5/P 19 mΩ — half the loss, double the placements |
 | 1.8 V gyro LDO | TPS7A2018PDQNR, X2SON-4 (1×1 mm) | C2878130 | 75 dB PSRR @10k–100 kHz; LCSC thin, consign from DigiKey |
 | Blackbox flash | BY25Q64ESCIG 64 Mbit SPI NOR | C50176394 | stock ≈ 0 — substitute W25Q64JV-class |
 
