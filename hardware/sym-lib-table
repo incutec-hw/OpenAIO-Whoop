@@ -1,7 +1,7 @@
 (sym_lib_table
 	(version 7)
-	(lib (name "lib") (type "KiCad") (uri "${KIPRJMOD}/libs/lib.kicad_sym") (options "") (descr "OpenAIO merged symbol library (FC+ESC+ELRS)"))
-	(lib (name "OpenRX-Shared") (type "KiCad") (uri "/Users/stan/Library/Mobile Documents/com~apple~CloudDocs/OpenRX/OpenRX-Lite/OpenRX-Shared.kicad_sym") (options "") (descr "Shared symbols for all OpenRX receivers"))
-	(lib (name "OpenRX-Shared") (type "KiCad") (uri "/Users/stan/Library/Mobile Documents/com~apple~CloudDocs/OpenRX/OpenRX-Lite/OpenRX-Shared.kicad_sym") (options "") (descr "Shared symbols for all OpenRX receivers"))
-	(lib (name "OpenRX-Shared") (type "KiCad") (uri "/Users/stan/Library/Mobile Documents/com~apple~CloudDocs/OpenRX/OpenRX-Lite/OpenRX-Shared.kicad_sym") (options "") (descr "Shared symbols for all OpenRX receivers"))
+	(lib (name "lib")(type "KiCad")(uri "${KIPRJMOD}/lib.kicad_sym")(options "")(descr "FC symbols (from OpenFC-Lite-Mini rev2)"))
+	(lib (name "components")(type "KiCad")(uri "${KIPRJMOD}/components.kicad_sym")(options "")(descr "ESC donor symbols (from 4in1-mini Rev2)"))
+	(lib (name "OpenRX-Shared")(type "KiCad")(uri "${KIPRJMOD}/OpenRX-Shared.kicad_sym")(options "")(descr "ELRS RX symbols (from OpenRX shared)"))
+	(lib (name "whoop")(type "KiCad")(uri "${KIPRJMOD}/whoop.kicad_sym")(options "")(descr "Bluejay ESC parts: EFM8BB51F16G, AGM310MAP, BY25Q64ESCIG"))
 )
