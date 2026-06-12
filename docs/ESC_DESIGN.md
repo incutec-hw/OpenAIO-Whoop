@@ -127,7 +127,25 @@ Whole-family supply flag (affects FC sheets inherited from OpenFC-Lite-Mini): **
 
 AGM314MAP (3.3×3.3) is too big for the whoop board — it stays earmarked for the larger AM32 toothpick AIO. A full ≤2.2×2.2 sweep of LCSC found **exactly one power-class complementary N+P family at 2×2: Diodes DMCxxxxUFDB (U-DFN2020-6)**. Everything else complementary at SOT-563/SOT-363 is small-signal (≥350 mΩ). AGMSEMI has nothing below 3.3×3.3.
 
-### Revision (same day): deeper sweep incl. DigiKey — SiA527DJ is the dual-package ceiling
+### Revision 3 (Stan's find): XR8G02M — new primary
+
+**XR8G02M (XNRUSEMI, C42457203, DFN2020-8L 2×2)** — found by Stan; missed by both parametric sweeps because LCSC files it under "Single FETs". Datasheet verified against the listing:
+- N: 12 typ/15 max mΩ @4.5 V, 16/23 @2.5 V, Vgs(th) 0.5–1.5 V
+- P: 17 typ/25 max @4.5 V, 24/30 @2.5 V
+- **20 V** Vds (vs SiA527DJ's 12 V — proper spike margin at 1S), ±12 V Vgs, 8 A cont / 32(N)/28(P) A pulsed, avalanche-rated, PD 15/20 W
+- Qg 15/19 nC @10 V (≈6–9 nC at 3.3 V) — slightly heavier gates than the alternatives; fine at 24–48 kHz PWM with direct GPIO drive, don't run 96 kHz
+- Pinout: D1/G1/D2/G2 bottom row, S1 ×2 / S2 ×2 top, dual exposed pads; die 1 = N, die 2 = P — verify assignment in schematic
+- Price $0.036–0.05 — cheapest candidate by 3–6×
+
+Beats the SiA527DJ (N 29/P 41 max) and DMC1229UFDB (N 29/P 61 max) on every electrical axis. **Supply is the only weakness: LCSC live stock 80 pcs, XNRUSEMI is a small single-source brand, standard reel 4000 — order/quote a reel up front (consignment workflow accepted).** Keep SiA527DJ (dual-sourced LCSC+DigiKey) as the qualified second source on its own footprint, or the AON2406+YJQ1216A pair as the BOM-resilient fallback.
+
+### What spec are we aiming for? (honest numbers vs market)
+
+Market tier marketing: 12 A cont / 18 A burst (BetaFPV Matrix dual-N SiZ322DT ≈ 5.3+6.35 mΩ → ~0.84 W/phase @12 A — only reachable with dual-N + high-side drive, excluded by the no-driver constraint).
+XR8G02M direct-drive P+N at ~3.3 V gate (est. ~14/20 mΩ typ): ~17 mΩ avg conduction → 1.1 W/phase @8 A, 2.4 W @12 A.
+**Honest spec target: ~8 A continuous / 15–20 A burst per motor** (IDM 32/28 A). Real 1S whoop flight currents are 2–5 A with brief 8–10 A punch-outs — in practice this matches what "12 A" boards sustain on 65–75 mm 1S; we should publish the measured rating, not the marketing one. Package allocation across the family: **2×2 XR8G02M = this whoop board; the AM32 toothpick AIO keeps its own 3.3×3.3 N-FET + driver stage (DOY180N03T + NSG2065Q from 4in1-mini); AGM314MAP (3.3×3.3 complementary) is reserved for the mid-tier 2–4S Bluejay concepts (OpenAIO-Lite-HD/Analog in Notion).**
+
+### Revision 2: deeper sweep incl. DigiKey — SiA527DJ is the dual-package ceiling
 
 Second sweep covering Vishay PowerPAK SC-70-6, onsemi WDFN 2×2, Diodes 8-lead, AOS/Toshiba/Nexperia/Chinese-brand 2×2-8L (DigiKey acceptable, consignment OK):
 
