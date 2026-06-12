@@ -123,7 +123,22 @@ Whole-family supply flag (affects FC sheets inherited from OpenFC-Lite-Mini): **
 - **2S: P-gate must reach VBAT (8.4 V) to turn OFF** → per-phase discrete level shift (2N7002 C8545 basic part + pull-up, ~2 parts/phase, 24 parts/board) is the only no-driver-IC option. If even that is too much board space, the design is 1S-only.
 - The 12 A dual-N market tier (BetaFPV SiZ322DT boards) is **off the table** — dual-N needs high-side drive. Honest rating for this topology: **~6–8 A cont/phase**; that covers 65–75 mm 1S whoops (real currents ≤5 A/motor), not the 12 A spec-sheet war.
 
-## FET selection — AGM314MAP replaces AGM310MAP
+## FET selection — FINAL (2026-06-12): 2×2 mm package required (Stan)
+
+AGM314MAP (3.3×3.3) is too big for the whoop board — it stays earmarked for the larger AM32 toothpick AIO. A full ≤2.2×2.2 sweep of LCSC found **exactly one power-class complementary N+P family at 2×2: Diodes DMCxxxxUFDB (U-DFN2020-6)**. Everything else complementary at SOT-563/SOT-363 is small-signal (≥350 mΩ). AGMSEMI has nothing below 3.3×3.3.
+
+**Primary: DMC1229UFDB-7 (C443653, U-DFN2020-6, 2.0×2.0×0.6 mm)** — imported into `whoop` lib, datasheet local.
+- ±12 V, N 29 mΩ / P 61 mΩ max @4.5 V, spec'd down to 1.8 V gate (true logic-level, Vgs(th) max 1.0 V) → @3.3 V worst-case ≈ N 31 / P 70 mΩ
+- Id 5.6/−3.8 A cont, 20/−15 A pulsed; realistic on a dense whoop board: **~2.5 A cont / ~5 A seconds / 10 A+ pulses per phase** — matches 0802/1002 motor reality (2–5 A peaks)
+- Smaller and thermally better (leadless, RθJC 30) than the SOT-23-6-class "EGX87C" parts on commercial 5 A whoop boards — not a downgrade
+- Caveat: 12 V Vds at 1S — fine with low-inductance layout + per-phase ceramic bypass; watch switching spikes on the bench
+- Stock: LCSC 2,280 + DigiKey backup; family stock swings hard → dual-source reels
+
+Same-footprint variants (drop-in, U-DFN2020-6 Type B pinout): **DMC2041UFDB-7** (20 V, P 90 mΩ@4.5 V — derate to ~2 A; LCSC 165/DK 5,840) if spike margin worries; **DMC1030UFDB-7** (best silicon: N 17 typ/P 59 max, IDM 35 A, RθJC 18; LCSC 0/DK 2,784 — prototype via DK).
+
+**Discrete-pair fallback (2× headroom): AON2406 (N, 12.5 mΩ@4.5 V, C3277752, 6.5k) + YJQ1216A (P, 11 mΩ@4.5 V, C919545, 1.9k)**, both DFN2020-6, $0.21/phase. True 5 A continuous per phase; 24 placements instead of 12 but total area (96 mm²) is still less than 12× AGM314MAP (131 mm²). BOM-resilient: N and P substitutes at 2×2 are plentiful and independent. Verify AON2406's low-Vgs behaviour (sister AON2408 C2931064 has the documented 2.5 V spec).
+
+## FET selection (superseded) — AGM314MAP replaces AGM310MAP
 
 **AGM314MAP (C17701056)** — pinout verified IDENTICAL to AGM310MAP from both datasheets (Pin1=S1, G1/S2/G2 bottom row, D1/D2 pads; FET1=N 30V/10mΩ@10V/30A, FET2=P −30V/18.5mΩ@10V/−20A). Same PDFN3.3×3.3 package. Strictly better dies, ~3k LCSC stock (vs 166–515), **$0.074 @500 (35% cheaper)**. Imported into `whoop` lib + datasheet at `hardware/datasheets/ESC/AGM314MAP.pdf`.
 
