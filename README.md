@@ -1,112 +1,71 @@
 # OpenAIO-Whoop
 
-Whoop-class variant forked from [OpenAIO](../OpenAIO). The design below is inherited verbatim from the toothpick-class parent and **has not yet been adapted for whoop class** — mounting pattern, current rating, and cell count still need revising.
+Open-source 25.5×25.5 mounting-pattern whoop AIO: flight controller + 4× Bluejay brushless ESC + ExpressLRS 2.4 GHz receiver, **digital video only** (SH1.0 6-pin HD-VTX port, no onboard analog VTX/OSD). Target: 1S/2S whoop class (65–85 mm).
 
-Open-source AIO (flight controller + 4-in-1 ESC). _Inherited parent spec (TODO: revise for whoop):_ 25.5×25.5 mounting pattern, toothpick-class 6S, 30 A continuous per channel.
+| Stage | Basis | Status |
+|---|---|---|
+| FC | OpenFC-Lite-Mini rev 2 sheets (RP2354A) | imported |
+| ESC | **new design** — EFM8BB51 (Bluejay BB51) + power stage TBD | parts imported, schematic not drawn |
+| RX | OpenRX-Lite (ESP32-C3 + SX1281, serial ELRS) | imported |
 
-Built by combining three existing projects:
+## Status — early design, no hardware
 
-- **[OpenFC-ECO](https://github.com/Just4Stan/OpenFC-ECO)** — RP2354B flight controller stage (IMU, OSD, power, blackbox, USB-C)
-- **[4in1ESC](https://github.com/Just4Stan/OpenESC)** — AT32F421 + NSG2065Q + SP40N03GNJ ESC stage, AM32 firmware
-- **[OpenRX-Lite](https://github.com/Just4Stan/OpenRX)** — ESP32-C3 + SX1281 2.4 GHz ExpressLRS receiver
+This repo was forked from OpenAIO (toothpick AIO) and is being adapted for whoop class. Done so far: repo restructure, current FC/RX sheets imported, Bluejay ESC parts imported (`whoop` library: EFM8BB51F16G, AGM310MAP, BY25Q64ESCIG), datasheets pulled, market + sourcing research in `docs/`.
 
-Physical construction: two PCBs reflowed together via BGA-style solder pad bonding. FC stage is the top board, ESC stage is the bottom daughterboard, both fabricated in the same KiCad project.
-
-## Firmware targets (already merged upstream)
-
-| Stage | Target |
-|---|---|
-| FC (RP2354B) | Betaflight `OPENFC_RP2350B` (PICO platform) |
-| ESC ×4 (AT32F421) | AM32 AT32F421 target |
-| ELRS (ESP32-C3 + SX1281) | ExpressLRS `Unified_ESP32C3_2400_RX` |
+Open design decisions (see `docs/ESC_DESIGN.md`):
+- **Pack voltage: 1S vs 2S** — gates the entire ESC gate-drive topology and the BEC topology (1S needs a boost to feed an O4 Lite properly)
+- **ESC power stage**: AGM310MAP complementary P+N is a 5–8 A-class topology; the 2026 market floor is 12 A cont — N+N + driver alternative documented
+- Blackbox: BY25Q64 SPI NOR replaces the microSD slot (sheet still shows microSD until redrawn); BY25Q64ESCIG itself needs a substitute (stock = 1 pc)
+- ESC channel sheets (`esc_channel.kicad_sch` ×4) still contain the inherited AT32/AM32 toothpick channel — to be gutted and redrawn as EFM8BB51 + power stage
 
 ## Repository layout
 
 ```
-OpenAIO/
-├── OpenAIO.kicad_pro
-├── OpenAIO.kicad_sch         ← root sheet (to be created)
-├── OpenAIO.kicad_pcb         ← both board outlines in one file
-├── rp2350a.kicad_sch         ← FC MCU         (from OpenFC-ECO)
-├── power.kicad_sch           ← FC power tree  (from OpenFC-ECO)
-├── imu.kicad_sch             ← LSM6DSV16XTR   (from OpenFC-ECO)
-├── osd.kicad_sch             ← PIO analog OSD (from OpenFC-ECO)
-├── blackbox.kicad_sch        ← microSD slot   (from OpenFC-ECO)
-├── pads.kicad_sch            ← connectors     (from OpenFC-ECO)
-├── esc_main.kicad_sch        ← ESC power + sense (from 4in1ESC)
-├── esc_channel.kicad_sch     ← single ESC channel, reused 4× (from 4in1ESC)
-├── elrs.kicad_sch            ← ESP32-C3 + SX1281 (from OpenRX-Lite)
-├── lib.kicad_sym             ← main merged symbol lib
-├── components.kicad_sym      ← 4in1ESC components (ported)
-├── ESCLibrary.kicad_sym      ← 4in1ESC legacy pre-valued passives (ported)
-├── PCM_Resistor_AKL.kicad_sym
-├── PCM_Transistor_MOSFET_AKL.kicad_sym
-├── OpenRX-Shared.kicad_sym   ← OpenRX-Lite ELRS symbols (ported)
-├── lib.pretty/               ← main footprint library
-├── {4in1ESC,components,footprint,ESCLibrary,OpenRX-Shared,PCM_*}.pretty/
-├── lib.3dshapes/             ← main 3D models
-├── {4in1ESC,OpenRX-Shared}.3dshapes/
-├── JLC2KiCad_lib/            ← legacy 3D packages (referenced by ESCLibrary footprints)
-├── sym-lib-table
-└── fp-lib-table
+OpenAIO-Whoop/
+├── README.md  LICENSE
+├── docs/
+│   ├── ESC_DESIGN.md               ← Bluejay ESC topology research + sourcing
+│   └── MARKET-RESEARCH-2026-06.md  ← competitive landscape, both AIO classes
+└── hardware/
+    ├── OpenAIO-Whoop.kicad_pro / .kicad_sch / .kicad_pcb
+    ├── schematics/
+    │   ├── fc/      rp2350a, power, imu, blackbox, pads  (OpenFC-Lite-Mini rev2; no osd — digital only)
+    │   ├── esc/     esc_channel (×4 from root — inherited placeholder, to be redrawn)
+    │   └── elrs/    elrs                                  (OpenRX-Lite)
+    ├── lib.kicad_sym / lib.pretty / lib.3dshapes           ← FC library
+    ├── whoop.kicad_sym / whoop.pretty / whoop.3dshapes     ← Bluejay ESC parts
+    ├── components.kicad_sym / 4in1ESC.pretty / .3dshapes   ← ESC donor parts (INA186 etc.)
+    ├── OpenRX-Shared.kicad_sym / .pretty / .3dshapes       ← RX library
+    ├── sym-lib-table / fp-lib-table
+    └── datasheets/    FC/  ESC/  ELRS/
 ```
 
-All libraries are project-local. No global or PCM dependencies.
+All libraries project-local; KiCad standard libs are the only external references. KiCad 10.
 
-## Key ICs
+## Key parts
 
-### FC stage (from OpenFC-ECO, V0.3 — known-good, prototype ordered)
-| IC | Part | LCSC |
-|---|---|---|
-| MCU | RP2354B (QFN-80, 2 MB flash) | C39843328 |
-| IMU | LSM6DSV16XTR | C5267406 |
-| 5V Buck | LMR51420YFDDCR (upgrade to LMR51430 3A recommended) | C7296200 |
-| 3.3V LDO | LP5912-3.3DRVR | C524780 |
-| 1.8V Gyro LDO | NCV8187AMT180TAG | C893189 |
-| 5V Power Mux | TPS2116DRLR | C3235557 |
-| OSD sync-sep | TLV3201AIDBVR | C105188 |
-| OSD buffer | TLV9061IDPWR | C2057878 |
-| OSD mux | SN74LVC1G3157DTBR | C2673087 |
-| SD card slot | TF-021B-H265 | C498185 |
-| USB-C | TYPE-C16PQTWT | — |
+### Bluejay ESC (`whoop` library)
+| Function | Part | LCSC | Note |
+|---|---|---|---|
+| ESC MCU ×4 | EFM8BB51F16G-C-QFN20R (8051, 50 MHz) | C6547511 | Bluejay BB51 target; not in JLC assembly lib — verify/consign |
+| Power stage (option A) | AGM310MAP complementary P+N half-bridge, ×3/channel | C5184858 | 30 V, N: 20 A/11 mΩ, P: 18 A/19 mΩ — **5-8 A class, supply-constrained** |
+| Blackbox flash | BY25Q64ESCIG 64 Mbit SPI NOR | C50176394 | stock ≈ 0 — substitute W25Q64JV-class |
 
-### ESC stage (from 4in1ESC 2, 6-layer, 30.5×32.2 mm standalone, 35 A/ch rated)
-| IC | Part | LCSC |
-|---|---|---|
-| ESC MCU ×4 | AT32F421G8U7 (ARM Cortex-M4, AM32) | C2765098 |
-| Gate driver ×4 | NSG2065Q (FD6288Q-compatible footprint) | C41414478 |
-| MOSFETs ×24 | SP40N03GNJ (40V 2.9 mΩ) | C22466709 |
-| Buck | LMR51420YDDCR | C7296200 |
-| LDO | TLV76733DRVR | C2848334 |
-| CSA | INA186A3IDCKR | C2058245 |
-| Shunt | 0.2 mΩ 2512 | C695806 |
-| ESC output connector | SM08B-SRSS-TB | C160407 |
+### FC / RX (inherited from sibling designs)
+RP2354A, LSM6DSV16XTR, 2× LMR51430, TPS2116, LP5912, NCV8187 (**unobtainable — replace**), TF-021B microSD (to be replaced by SPI flash), ESP32-C3FH4 + SX1281 + TLV75533. Full tables in the OpenAIO repo README.
 
-### ELRS stage (from OpenRX-Lite)
-| IC | Part |
+## Firmware targets
+
+| Stage | Target |
 |---|---|
-| MCU | ESP32-C3FH4 |
-| Radio | SX1281IMLTRT (2.4 GHz) |
-| BPF | 2450FM07D0034T |
-| LDO | TLV75533PDQNR |
-| Antenna | AOTA-B201610S3R3-101-T (ceramic) |
+| FC | Betaflight, derived from `OPENFC_LITE_MINI_RP2350A` (custom target) |
+| ESC ×4 | **Bluejay** BB51, 48 kHz (2S) / 96 kHz (1S), bidirectional DShot |
+| RX | ExpressLRS `Unified_ESP32C3_2400_RX` (survives in ELRS 4.0 targets) |
 
-## Known issues inherited from source designs
+## Competitive bar (2026)
 
-From OpenFC-ECO V0.3 — fix before first AIO spin:
-- **C28** (22 µF 0603 16V on +10V rail): voltage rating too low — change to 25V
-- **R30** (6.8k): gives 9.42V not 10V — change to 6.34k (E96)
-- **L2** (4.7 µH): undersized for 10V rail at 6S — change to ~10 µH (FTC303020D100MBCA)
-- **LED0** (D7, green): Betaflight manufacturer guidelines §3.1.4.6 **require** LED0 to be blue
-- **Reverse-polarity protection**: not present in ECO, add for AIO
-- **LMR51420** (2A): drop-in upgrade to LMR51430YFDDCR (3A)
-
-From 4in1ESC 2 — supply chain notes in `ALTERNATIVES.md` and `COST_ANALYSIS.md`:
-- **NSG2065Q** stock is tight on LCSC (~225 units); FD6288Q-compatible clones available as drop-in
-- **INA186A3IDCKR** stock critical; INA199A2 is a possible fallback (26V common-mode — tight at 6S)
+Reference: BetaFPV Matrix 1S 3IN1 HD ($50, 12A/18A Bluejay, serial ELRS, 5V/3A BEC, SH1.0 6-pin O4 port, 3.2 g). To match the class: 12 A cont ESC, 5V/3A holding to ~2.8 Vin, 25.5×25.5 mount, ≤3.5 g. Differentiators: open hardware, real blackbox flash, real current shunt + published scale, maintained BF target. Details: `docs/MARKET-RESEARCH-2026-06.md`.
 
 ## License
 
-Hardware: [CERN-OHL-S-2.0](https://ohwr.org/cern_ohl_s_v2.txt).
-
-Firmware references upstream projects under their respective licenses (Betaflight, AM32, ExpressLRS).
+Hardware: [CERN-OHL-S-2.0](https://ohwr.org/cern_ohl_s_v2.txt). Firmware references upstream projects (Betaflight, Bluejay, ExpressLRS) under their respective licenses.
