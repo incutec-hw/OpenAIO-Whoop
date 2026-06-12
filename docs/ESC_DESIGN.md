@@ -143,6 +143,6 @@ Second sources / hedges:
 - 20 A+ toothpick tier: Toshiba TPN2R203NC-class discrete N + FD6288 drivers — i.e. the 4in1-mini architecture, irrelevant here.
 - Bluejay layout naming note: the middle letter (Z_**H**_30, A_**X**_5) is the MCU family (H=BB21, X=BB51), NOT FET topology; only the deadtime digits hint at the stage.
 
-## 1.8 V gyro LDO replacement (family-wide, decided by research)
+## 1.8 V gyro LDO replacement (family-wide — DECIDED: TPS7A2018)
 
-**LP5912-1.8DRVR (C2876234)** — same WSON-6 2×2 land pattern as the LP5912-3.3DRVR already in the design, PSRR 75 dB@1 kHz (= NCV8187), noise 12 µVrms (better), keeps the PG pin (D8 LED net survives). Pin order differs from NCV8187 (IN/OUT corners swap, SNS gone) → minor re-route, same pads. **Stock: LCSC only 550 pcs (1.8 V is the rare variant), DigiKey 5.8k — buy/consign the reel early.** Runner-up: TPS7A2018 (95 dB/7 µVrms, X2SON-4 1×1 or SOT-23-5, DK 25k) if dropping PG and changing footprint is acceptable.
+**TPS7A2018PDQNR** (X2SON-4 1×1 mm, LCSC C2878130 — only 42 pcs retail, DigiKey 25k @ $0.136 → consign; SOT-23-5 DBV C963430 with 25k LCSC stock as large-package alternate). Chosen over LP5912-1.8 on actual PSRR curves: 75 dB @ 10 kHz AND 100 kHz spec'd (LP5912 dips to ~58 dB right at the 20–30 kHz MEMS gyro drive band; the original NCV8187 collapsed to ~35 dB @ 300 kHz). Noise 7–10 µVrms. Trade-offs: PG pin lost (D8 LED net), new footprint — accepted, re-route was needed anyway. Keep a ferrite/RC pole ahead of the LDO for the ~1 MHz buck band where every candidate is ~45–50 dB. Imported into `whoop` lib here and `imports` lib in OpenAIO; full comparison table in OpenAIO `docs/SOURCING-2026-06.md`.
