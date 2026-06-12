@@ -127,7 +127,17 @@ Whole-family supply flag (affects FC sheets inherited from OpenFC-Lite-Mini): **
 
 AGM314MAP (3.3×3.3) is too big for the whoop board — it stays earmarked for the larger AM32 toothpick AIO. A full ≤2.2×2.2 sweep of LCSC found **exactly one power-class complementary N+P family at 2×2: Diodes DMCxxxxUFDB (U-DFN2020-6)**. Everything else complementary at SOT-563/SOT-363 is small-signal (≥350 mΩ). AGMSEMI has nothing below 3.3×3.3.
 
-**Primary: DMC1229UFDB-7 (C443653, U-DFN2020-6, 2.0×2.0×0.6 mm)** — imported into `whoop` lib, datasheet local.
+### Revision (same day): deeper sweep incl. DigiKey — SiA527DJ is the dual-package ceiling
+
+Second sweep covering Vishay PowerPAK SC-70-6, onsemi WDFN 2×2, Diodes 8-lead, AOS/Toshiba/Nexperia/Chinese-brand 2×2-8L (DigiKey acceptable, consignment OK):
+
+- **No ≤2.3 mm complementary dual reaches N ≤20 / P ≤35 mΩ. The class ceiling is the Vishay SiA527DJ** (PowerPAK SC-70-6, 2.0×2.0×0.8): **N 29 / P 41 mΩ max @4.5 V**, spec'd down to 1.5 V gate, Vgs(th) ≤1.0 V, ±4.5 A cont / 20/−15 A pulsed, 12 V. LCSC C222486 (4.9k, ~$0.24) AND DigiKey 11k — dual-sourced. P-side 33% better than DMC1229UFDB; N-side tie. NOT pin-compatible with U-DFN2020-6 — different footprint, verify phase-leg orientation.
+- Nexperia LFPAK22 is N-only (no P exists); AOS/Toshiba have no complementary ≤2.3 mm; LCSC has zero Chinese-brand complementary duals in any 2×2-8L package (verified via API).
+- **If Rds is the priority, the discrete pair wins decisively: AON2406 (N, 12.5 mΩ max @4.5 V) + YJQ1216A (P, 19 max / 11 typ)** — 2.3× (N) and 3.2× (P) lower than the best dual, both spec'd at 2.5 V, ~$0.25/phase. Cost: 24 placements vs 12. YJQ1216A is LCSC-only; DigiKey P-alts at 2×2 are thin (DMP1022UFDF C155358 as second source).
+
+All three imported into `whoop` lib (SIA527DJ-T1-GE3, AON2406, YJQ1216A); SiA527DJ datasheet local. **Open choice (Stan): SiA527DJ dual (12 pkgs, simpler) vs AON2406+YJQ1216A pair (24 pkgs, ~half the conduction loss).** DMC1229UFDB-7 below remains the fallback dual.
+
+**Previous primary: DMC1229UFDB-7 (C443653, U-DFN2020-6, 2.0×2.0×0.6 mm)** — imported into `whoop` lib, datasheet local.
 - ±12 V, N 29 mΩ / P 61 mΩ max @4.5 V, spec'd down to 1.8 V gate (true logic-level, Vgs(th) max 1.0 V) → @3.3 V worst-case ≈ N 31 / P 70 mΩ
 - Id 5.6/−3.8 A cont, 20/−15 A pulsed; realistic on a dense whoop board: **~2.5 A cont / ~5 A seconds / 10 A+ pulses per phase** — matches 0802/1002 motor reality (2–5 A peaks)
 - Smaller and thermally better (leadless, RθJC 30) than the SOT-23-6-class "EGX87C" parts on commercial 5 A whoop boards — not a downgrade
