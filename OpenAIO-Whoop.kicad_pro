@@ -645,7 +645,7 @@
         "uuid": "71464028-276a-4f53-a5ab-e2763f330889"
       }
     ],
-    "used_designators": "H1-4",
+    "used_designators": "X2,U13-15,TP9-13,R7,R55-57,OSC1,FL1,D9,C37,C65-84,C112-115,AE1-2,L4-7,H1-4",
     "variants": []
   },
   "sheets": [
@@ -688,10 +688,6 @@
     [
       "e9a5e82f-5bfa-48b6-a005-a58fe491554e",
       "ESC4"
-    ],
-    [
-      "40d38534-f247-49c2-8fed-9ffb6d470031",
-      "OSD"
     ],
     [
       "dba7988a-9fe1-4431-ba7e-5b29cb10b00e",

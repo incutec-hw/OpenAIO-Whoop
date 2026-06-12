@@ -1308,7 +1308,7 @@
 			(uuid "27d6ad48-8d7f-4d94-885f-1dc86b52aca5")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "#PWR0100")
 					(unit 1)
@@ -1392,7 +1392,7 @@
 			(uuid "f703f040-0b11-45a9-87f6-eb12a724f992")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "#PWR095")
 					(unit 1)
@@ -1476,7 +1476,7 @@
 			(uuid "2a4de27f-a8c7-4a5f-abee-748676438a9c")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "#PWR0101")
 					(unit 1)
@@ -1595,7 +1595,7 @@
 			(uuid "9f9ba8c8-ef42-44e2-a471-cc1e2b836ebb")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "C52")
 					(unit 1)
@@ -1679,7 +1679,7 @@
 			(uuid "97e90b59-1a2d-47d4-b892-e49d36ef82ac")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "#PWR097")
 					(unit 1)
@@ -1833,7 +1833,7 @@
 			(uuid "82938ce3-46a6-4621-a11d-a132a422c2d4")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "U6")
 					(unit 1)
@@ -1917,7 +1917,7 @@
 			(uuid "95e9ddf4-1944-4358-ad33-19e9a50e1bcb")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "#PWR096")
 					(unit 1)
@@ -2001,7 +2001,7 @@
 			(uuid "ab44b0af-ebe2-4f35-a920-6329ad7701c0")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "#PWR098")
 					(unit 1)
@@ -2120,7 +2120,7 @@
 			(uuid "c1606cb2-7648-4079-9ef6-e5caf5f8ab3d")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "C53")
 					(unit 1)
@@ -2205,7 +2205,7 @@
 			(uuid "68108012-0853-4ca6-8a2c-da4794ff84b8")
 		)
 		(instances
-			(project "OpenAIO"
+			(project "OpenAIO-Whoop"
 				(path "/71464028-276a-4f53-a5ab-e2763f330889/65265e1e-df0d-4bed-bb4d-aeb08802ffab"
 					(reference "#PWR099")
 					(unit 1)
