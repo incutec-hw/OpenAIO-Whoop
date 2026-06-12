@@ -50,7 +50,8 @@ All libraries project-local; KiCad standard libs are the only external reference
 | ESC MCU ×4 | EFM8BB51F16G-C-QFN20R (8051, 50 MHz) | C6547511 | Bluejay BB51 target; not in JLC assembly lib — verify/consign |
 | Power stage | XR8G02M complementary N+P, DFN2020-8 (2×2 mm), ×3/channel, GPIO direct drive | C42457203 | 20 V, N 15/P 25 mΩ max @4.5 V (spec'd to 2.5 V) — ~8 A cont/15 A+ burst per motor. Single-source brand: reel-order up front. 2nd source: SiA527DJ (C222486) |
 | 1.8 V gyro LDO | TPS7A2018PDQNR, X2SON-4 (1×1 mm) | C2878130 | 75 dB PSRR @10k–100 kHz; LCSC thin, consign from DigiKey |
-| Blackbox flash | BY25Q64ESCIG 64 Mbit SPI NOR | C50176394 | stock ≈ 0 — substitute W25Q64JV-class |
+| Blackbox flash | W25Q128JVPIQ 128 Mbit SPI NOR, WSON-8 (5×6 mm) | C190862 | 16 MB = market bar (replaces dead BY25Q64) |
+| RX MCU option | ESP8685H4 (ESP32-C3 die, 4 MB flash), QFN-28 (4×4 mm) | C4944062 | 1 mm smaller each side than ESP32-C3FH4; same ELRS targets |
 
 ### FC / RX (inherited from sibling designs)
 RP2354A, LSM6DSV16XTR, 2× LMR51430, TPS2116, LP5912, NCV8187 (**unobtainable — replace**), TF-021B microSD (to be replaced by SPI flash), ESP32-C3FH4 + SX1281 + TLV75533. Full tables in the OpenAIO repo README.

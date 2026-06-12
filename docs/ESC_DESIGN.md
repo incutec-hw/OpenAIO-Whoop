@@ -127,7 +127,18 @@ Whole-family supply flag (affects FC sheets inherited from OpenFC-Lite-Mini): **
 
 AGM314MAP (3.3×3.3) is too big for the whoop board — it stays earmarked for the larger AM32 toothpick AIO. A full ≤2.2×2.2 sweep of LCSC found **exactly one power-class complementary N+P family at 2×2: Diodes DMCxxxxUFDB (U-DFN2020-6)**. Everything else complementary at SOT-563/SOT-363 is small-signal (≥350 mΩ). AGMSEMI has nothing below 3.3×3.3.
 
-### Revision 3 (Stan's find): XR8G02M — new primary
+### Revision 4 — BetaFPV teardown observations (Stan) close the architecture question
+
+- **2022 BetaFPV F4 1S 12A** (SiZ322DT dual-N): Stan IDs ~3-pin 0402-size parts + 3 Schottkys + 3 bootstrap caps per motor → the "undocumented high-side drive" is a **discrete bootstrap level shift per phase** (tiny transistor + bootstrap diode/cap). So dual-N without a driver IC costs ~3 extra parts per phase — 9/motor, 36/board. Not for us.
+- **2025 Matrix 1S 5IN1 II (Air65 II, "12A/18A")** uses **AGMSEMI AGM210MAP — complementary P+N, GPIO direct drive. Same architecture we chose.** Datasheet verified (local): PDFN3.3×3.3 (NOT 2×2; note LCSC/BetaFPV listings say 25 V — datasheet says **20 V**), N 10 typ/14 max mΩ @4.5 V (14/20 @2.5 V), P 13 mΩ typ, Vgs(th) max 1.0 V, 25 A/100 A pulsed, RθJC 3.5. **C7431169, 10,623 stock** — 20× the stock of AGM310/314.
+- Implications: (a) the flagship "12A/18A" 1S board is P+N direct drive — our topology is the current market architecture, not the legacy one; their 12 A claim on N10/P13 dies ≈ 1.7 W/phase — spec-sheet optimistic, consistent with our honest-rating stance. (b) AGM210MAP supersedes AGM310/314 as the AGMSEMI pick for the 3.3×3.3 tier (better dies, field-proven on Air65 II, real stock) — earmark for the mid-tier 2–4S Bluejay boards; 20 V means 2–3S ceiling, not 4S. (c) Why "25 V/20 V for a 1S part?" — voltage class is ~free in trench processes; it buys avalanche margin against phase-node inductive spikes and lets one part cover 1–2S+ product lines. XR8G02M (20 V) follows the same logic.
+- Also noted from the same board (Stan): G473CEU6 (we use RP2354A), BB51F16G QFN-20 (= our EFM8BB51F16G), AT7456E analog OSD + RTC6705-class VTX (n/a — we're digital-only), **PUYA PY25Q128 16 MB blackbox flash** (we adopt 128 Mbit — see below), and a **2-Schottky diode-OR for 5 V/USB selection** instead of a power-mux IC (space/cost saver — candidate to replace TPS2116 on the whoop; costs ~0.3 V drop, Stan's circuit call).
+
+**Blackbox flash decision: W25Q128JVPIQ (C190862, WSON-8 5×6, 16 MB, 6.4k stock + 110k in SOIC variant)** replaces the dead BY25Q64 (8 MB). 16 MB is the market bar; smallest stocked 3.3 V 128 Mbit package (2×3 DFN class tops out at 64 Mbit, all dead/1.8 V stock). Same capacity BetaFPV ships, smaller package than their SOP-8. Imported into `whoop` lib.
+
+**RX MCU density option: ESP8685H4 (C4944062, QFN-28 4×4, 872 JLC stock)** — ESP32-C3 die with in-package 4 MB flash in a 4×4 (vs 5×5 QFN-32 ESP32-C3FH4); the "C3's ESP8285" Stan remembered. Runs the same ELRS ESP32-C3 targets; OpenRX already had its datasheet on file. New footprint + fewer GPIO — RX section relayout. Imported into `whoop` lib.
+
+### Revision 3 (Stan's find): XR8G02M — primary for THIS board (2×2)
 
 **XR8G02M (XNRUSEMI, C42457203, DFN2020-8L 2×2)** — found by Stan; missed by both parametric sweeps because LCSC files it under "Single FETs". Datasheet verified against the listing:
 - N: 12 typ/15 max mΩ @4.5 V, 16/23 @2.5 V, Vgs(th) 0.5–1.5 V
