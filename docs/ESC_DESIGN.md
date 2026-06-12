@@ -112,3 +112,37 @@ Decision still gates on pack voltage (1S vs 2S) — see checklist above.
 | Motor plug 1.25 mm 3P | C293630 (Molex PicoBlade) | — | 29k | canonical whoop motor connector; C3029360 clone at 1/3 price |
 
 Whole-family supply flag (affects FC sheets inherited from OpenFC-Lite-Mini): **NCV8187AMT180TAG (1.8 V gyro LDO, C893189) is effectively unobtainable (62 JLC / 19 LCSC)** — pick a replacement before any spin.
+
+---
+
+# Update 2026-06-12 (later) — topology locked: NO gate driver, FET research final
+
+**Stan's decision: the Bluejay ESC has no gate-driver IC — EFM8 GPIO direct drive only, no board space.** This locks the power stage to complementary P+N per phase (high-side N is impossible without a driver/bootstrap). Consequences:
+
+- **1S: clean direct drive**, zero extra parts (CrazyBee/tinyPEPPER pattern — confirmed by teardowns below).
+- **2S: P-gate must reach VBAT (8.4 V) to turn OFF** → per-phase discrete level shift (2N7002 C8545 basic part + pull-up, ~2 parts/phase, 24 parts/board) is the only no-driver-IC option. If even that is too much board space, the design is 1S-only.
+- The 12 A dual-N market tier (BetaFPV SiZ322DT boards) is **off the table** — dual-N needs high-side drive. Honest rating for this topology: **~6–8 A cont/phase**; that covers 65–75 mm 1S whoops (real currents ≤5 A/motor), not the 12 A spec-sheet war.
+
+## FET selection — AGM314MAP replaces AGM310MAP
+
+**AGM314MAP (C17701056)** — pinout verified IDENTICAL to AGM310MAP from both datasheets (Pin1=S1, G1/S2/G2 bottom row, D1/D2 pads; FET1=N 30V/10mΩ@10V/30A, FET2=P −30V/18.5mΩ@10V/−20A). Same PDFN3.3×3.3 package. Strictly better dies, ~3k LCSC stock (vs 166–515), **$0.074 @500 (35% cheaper)**. Imported into `whoop` lib + datasheet at `hardware/datasheets/ESC/AGM314MAP.pdf`.
+
+Caveat for direct 3.3 V drive: datasheet specs Rds at 10 V and 4.5 V only — N 16 mΩ typ / P 27 mΩ typ @ 4.5 V; Vgs(th) max 2.2 V means 3.3 V drive has only ~1.1 V overdrive worst-case. **Bench-verify Rds and switching at 3.3 V gate, 1S pack** before committing. (This is the same regime every CrazyBee-class board operates in.)
+
+Second sources / hedges:
+- Diodes **DMC3025LDV-13** — same PowerDI3333-8 footprint class, Western brand, DigiKey 5.7k @ $0.25/1k. BUT Vgs(th) 2.4 V / Rds spec'd @4.5 V → **not credible at 3.3 V direct drive**; it's a 2S-with-level-shift second source only.
+- Discrete pair fallback on a dual-pad footprint: AGM30P08AP (P, 11.5 mΩ@4.5V, 6k stock) + AGM310AS (N, DFN2×2, $0.048) if AGMSEMI duals dry up.
+- AGM318MAP / AGM312MAP exist in the same package but are worse and lower-stock — ignore.
+
+## What commercial whoop ESCs actually use (teardown research, verified)
+
+- **CrazyBee F4 V2 class (5–10 A 1S, the architecture we're copying)**: 12× N+P complementary pairs marked "EGX87C" (full MPN never decoded; sold as repair parts under the marking), **driven directly by EFM8 GPIO, no driver** — brushlesswhoop.com/anatomy-of-an-all-in-one-fc/
+- NewBeeDrone BLV1–4 / Hummingbird V2/V3: official replacement part is "N+P MOS" ×12 — same topology, MPN undisclosed.
+- **BetaFPV F4 1S 12A**: 12× Vishay SiZ322DT dual-N 25 V PowerPAK1212 (3.3×3.3) — part is **EOL at DigiKey** (successor SiZ350DT ~$2); high-side drive scheme undocumented in any teardown. Don't copy.
+- NBD BLV5 / RaceSpec V2 "18A": "double N-channel", MPN undisclosed.
+- 20 A+ toothpick tier: Toshiba TPN2R203NC-class discrete N + FD6288 drivers — i.e. the 4in1-mini architecture, irrelevant here.
+- Bluejay layout naming note: the middle letter (Z_**H**_30, A_**X**_5) is the MCU family (H=BB21, X=BB51), NOT FET topology; only the deadtime digits hint at the stage.
+
+## 1.8 V gyro LDO replacement (family-wide, decided by research)
+
+**LP5912-1.8DRVR (C2876234)** — same WSON-6 2×2 land pattern as the LP5912-3.3DRVR already in the design, PSRR 75 dB@1 kHz (= NCV8187), noise 12 µVrms (better), keeps the PG pin (D8 LED net survives). Pin order differs from NCV8187 (IN/OUT corners swap, SNS gone) → minor re-route, same pads. **Stock: LCSC only 550 pcs (1.8 V is the rare variant), DigiKey 5.8k — buy/consign the reel early.** Runner-up: TPS7A2018 (95 dB/7 µVrms, X2SON-4 1×1 or SOT-23-5, DK 25k) if dropping PG and changing footprint is acceptable.
