@@ -4,4 +4,5 @@
 	(lib (name "4in1ESC")(type "KiCad")(uri "${KIPRJMOD}/4in1ESC.pretty")(options "")(descr "ESC donor footprints (from 4in1-mini Rev2)"))
 	(lib (name "OpenRX-Shared")(type "KiCad")(uri "${KIPRJMOD}/OpenRX-Shared.pretty")(options "")(descr "ELRS RX footprints (from OpenRX shared)"))
 	(lib (name "whoop")(type "KiCad")(uri "${KIPRJMOD}/whoop.pretty")(options "")(descr "Bluejay ESC footprints: QFN-20 EFM8BB51, PowerDI3333-8 AGM310MAP, DFN-8 BY25Q64"))
+	(lib (name "Incutec")(type "KiCad")(uri "${KIPRJMOD}/../libs/KiCad-Library/footprint/Incutec.pretty")(options "")(descr "incutec shared library (submodule libs/KiCad-Library)"))
 )
