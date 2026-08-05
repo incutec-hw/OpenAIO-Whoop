@@ -91,11 +91,11 @@ gates directly from the EFM8, no gate-driver IC.** That is correct **for 1S only
 ## ⚠ AGM310MAP thermal problem at the 12 A class floor
 
 P-channel Rds(on) = 19 mΩ. At 12 A phase current with ~50% high-side conduction:
-P ≈ 12² × 0.019 × 0.5 ≈ **1.4 W per phase high-side** (4.1 W total high-side at full load) in 3.3×3.3 mm packages on a ~25 mm board. The complementary P+N topology is comfortable in the **5–8 A class**, marginal at 10 A, and not credible at 12 A cont / 18 A burst.
+P ≈ 12² × 0.019 × 0.5 ≈ **1.4 W per phase high-side** (4.1 W total high-side at full load) in 3.3×3.3 mm packages on a ~25 mm board. The complementary P+N topology is comfortable in the **5-8 A class**, marginal at 10 A, and not credible at 12 A cont / 18 A burst.
 
 Topology options, in increasing BOM weight:
-1. **AGM310MAP as-is** → honest 6–8 A cont rating. Fine for a 65 mm 1S "Lite" tier, below the 2026 class floor for the main SKU.
-2. **N+N FETs + 3-phase half-bridge driver per channel** (what 12 A+ commercial boards do; NBD "double-NMOS"). Driver candidates: FD6288Q-family clones (6288Q-MNS etc., proven in the OpenESC_20X20 lineage), need ≥10 V gate supply, so 2S-only or a small boost.
+1. **AGM310MAP as-is** → honest 6-8 A cont rating. Fine for a 65 mm 1S "Lite" tier, below the 2026 class floor for the main SKU.
+2. **N+N FETs + 3-phase half-bridge driver per channel** (what 12 A+ commercial boards do; NBD "double-NMOS"). Driver candidates: FD6288Q-family clones (6288Q-MNS etc., proven in the OpenESC-20x20 lineage), need ≥10 V gate supply, so 2S-only or a small boost.
 3. Hybrid: low-side N direct GPIO, high-side N with bootstrap driver.
 
 Decision still gates on pack voltage (1S vs 2S), see checklist above.
@@ -122,7 +122,7 @@ Whole-family supply flag (affects FC sheets inherited from OpenFC-Lite-Mini): **
 
 - **1S: clean direct drive**, zero extra parts (CrazyBee/tinyPEPPER pattern, confirmed by teardowns below).
 - **2S: P-gate must reach VBAT (8.4 V) to turn OFF** → per-phase discrete level shift (2N7002 C8545 basic part + pull-up, ~2 parts/phase, 24 parts/board) is the only no-driver-IC option. If even that is too much board space, the design is 1S-only.
-- The 12 A dual-N market tier (BetaFPV SiZ322DT boards) is **off the table**, dual-N needs high-side drive. Honest rating for this topology: **~6–8 A cont/phase**; that covers 65–75 mm 1S whoops (real currents ≤5 A/motor), not the 12 A spec-sheet war.
+- The 12 A dual-N market tier (BetaFPV SiZ322DT boards) is **off the table**, dual-N needs high-side drive. Honest rating for this topology: **~6-8 A cont/phase**; that covers 65-75 mm 1S whoops (real currents ≤5 A/motor), not the 12 A spec-sheet war.
 
 ## FET selection, FINAL (2026-06-12): 2×2 mm package required
 
@@ -132,7 +132,7 @@ AGM314MAP (3.3×3.3) is too big for the whoop board, it stays earmarked for the 
 
 - **2022 BetaFPV F4 1S 12A** (SiZ322DT dual-N): teardown IDs ~3-pin 0402-size parts + 3 Schottkys + 3 bootstrap caps per motor → the "undocumented high-side drive" is a **discrete bootstrap level shift per phase** (tiny transistor + bootstrap diode/cap). So dual-N without a driver IC costs ~3 extra parts per phase, 9/motor, 36/board. Not for us.
 - **2025 Matrix 1S 5IN1 II (Air65 II, "12A/18A")** uses **AGMSEMI AGM210MAP, complementary P+N, GPIO direct drive. Same architecture we chose.** Datasheet verified (local): PDFN3.3×3.3 (NOT 2×2; note LCSC/BetaFPV listings say 25 V, datasheet says **20 V**), N 10 typ/14 max mΩ @4.5 V (14/20 @2.5 V), P 13 mΩ typ, Vgs(th) max 1.0 V, 25 A/100 A pulsed, RθJC 3.5. **C7431169, 10,623 stock**, 20× the stock of AGM310/314.
-- Implications: (a) the flagship "12A/18A" 1S board is P+N direct drive, our topology is the current market architecture, not the legacy one; their 12 A claim on N10/P13 dies ≈ 1.7 W/phase, spec-sheet optimistic, consistent with our honest-rating stance. (b) AGM210MAP supersedes AGM310/314 as the AGMSEMI pick for the 3.3×3.3 tier (better dies, field-proven on Air65 II, real stock), earmark for the mid-tier 2–4S Bluejay boards; 20 V means 2–3S ceiling, not 4S. (c) Why "25 V/20 V for a 1S part?", voltage class is ~free in trench processes; it buys avalanche margin against phase-node inductive spikes and lets one part cover 1–2S+ product lines. XR8G02M (20 V) follows the same logic.
+- Implications: (a) the flagship "12A/18A" 1S board is P+N direct drive, our topology is the current market architecture, not the legacy one; their 12 A claim on N10/P13 dies ≈ 1.7 W/phase, spec-sheet optimistic, consistent with our honest-rating stance. (b) AGM210MAP supersedes AGM310/314 as the AGMSEMI pick for the 3.3×3.3 tier (better dies, field-proven on Air65 II, real stock), earmark for the mid-tier 2-4S Bluejay boards; 20 V means 2-3S ceiling, not 4S. (c) Why "25 V/20 V for a 1S part?", voltage class is ~free in trench processes; it buys avalanche margin against phase-node inductive spikes and lets one part cover 1-2S+ product lines. XR8G02M (20 V) follows the same logic.
 - Also noted from the same board: G473CEU6 (we use RP2354A), BB51F16G QFN-20 (= our EFM8BB51F16G), AT7456E analog OSD + RTC6705-class VTX (n/a, we're digital-only), **PUYA PY25Q128 16 MB blackbox flash** (we adopt 128 Mbit, see below), and a **2-Schottky diode-OR for 5 V/USB selection** instead of a power-mux IC (space/cost saver, candidate to replace TPS2116 on the whoop; costs ~0.3 V drop, accepted trade).
 
 **Blackbox flash decision: W25Q128JVPIQ (C190862, WSON-8 5×6, 16 MB, 6.4k stock + 110k in SOIC variant)** replaces the dead BY25Q64 (8 MB). 16 MB is the market bar; smallest stocked 3.3 V 128 Mbit package (2×3 DFN class tops out at 64 Mbit, all dead/1.8 V stock). Same capacity BetaFPV ships, smaller package than their SOP-8. Imported into `whoop` lib.
@@ -142,12 +142,12 @@ AGM314MAP (3.3×3.3) is too big for the whoop board, it stays earmarked for the 
 ### Revision 3: XR8G02M, primary for THIS board (2×2)
 
 **XR8G02M (XNRUSEMI, C42457203, DFN2020-8L 2×2)** missed by both parametric sweeps because LCSC files it under "Single FETs". Datasheet verified against the listing:
-- N: 12 typ/15 max mΩ @4.5 V, 16/23 @2.5 V, Vgs(th) 0.5–1.5 V
+- N: 12 typ/15 max mΩ @4.5 V, 16/23 @2.5 V, Vgs(th) 0.5-1.5 V
 - P: 17 typ/25 max @4.5 V, 24/30 @2.5 V
 - **20 V** Vds (vs SiA527DJ's 12 V, proper spike margin at 1S), ±12 V Vgs, 8 A cont / 32(N)/28(P) A pulsed, avalanche-rated, PD 15/20 W
-- Qg 15/19 nC @10 V (≈6–9 nC at 3.3 V), slightly heavier gates than the alternatives; fine at 24–48 kHz PWM with direct GPIO drive, don't run 96 kHz
+- Qg 15/19 nC @10 V (≈6-9 nC at 3.3 V), slightly heavier gates than the alternatives; fine at 24-48 kHz PWM with direct GPIO drive, don't run 96 kHz
 - Pinout: D1/G1/D2/G2 bottom row, S1 ×2 / S2 ×2 top, dual exposed pads; die 1 = N, die 2 = P, verify assignment in schematic
-- Price $0.036–0.05, cheapest candidate by 3–6×
+- Price $0.036-0.05, cheapest candidate by 3-6×
 
 Beats the SiA527DJ (N 29/P 41 max) and DMC1229UFDB (N 29/P 61 max) on every electrical axis. **Supply is the only weakness: LCSC live stock 80 pcs, XNRUSEMI is a small single-source brand, standard reel 4000, order/quote a reel up front (consignment workflow accepted).** Keep SiA527DJ (dual-sourced LCSC+DigiKey) as the qualified second source on its own footprint, or the AON2406+YJQ1216A pair as the BOM-resilient fallback.
 
@@ -155,7 +155,7 @@ Beats the SiA527DJ (N 29/P 41 max) and DMC1229UFDB (N 29/P 61 max) on every elec
 
 Market tier marketing: 12 A cont / 18 A burst (BetaFPV Matrix dual-N SiZ322DT ≈ 5.3+6.35 mΩ → ~0.84 W/phase @12 A, only reachable with dual-N + high-side drive, excluded by the no-driver constraint).
 XR8G02M direct-drive P+N at ~3.3 V gate (est. ~14/20 mΩ typ): ~17 mΩ avg conduction → 1.1 W/phase @8 A, 2.4 W @12 A.
-**Honest spec target: ~8 A continuous / 15–20 A burst per motor** (IDM 32/28 A). Real 1S whoop flight currents are 2–5 A with brief 8–10 A punch-outs, in practice this matches what "12 A" boards sustain on 65–75 mm 1S; we should publish the measured rating, not the marketing one. Package allocation across the family: **2×2 XR8G02M = this whoop board; the AM32 toothpick AIO keeps its own 3.3×3.3 N-FET + driver stage (DOY180N03T + NSG2065Q from OpenESC_20X20); AGM314MAP (3.3×3.3 complementary) is reserved for the mid-tier 2–4S Bluejay concepts (OpenAIO-Lite-HD/Analog concepts).**
+**Honest spec target: ~8 A continuous / 15-20 A burst per motor** (IDM 32/28 A). Real 1S whoop flight currents are 2-5 A with brief 8-10 A punch-outs, in practice this matches what "12 A" boards sustain on 65-75 mm 1S; we should publish the measured rating, not the marketing one. Package allocation across the family: **2×2 XR8G02M = this whoop board; the AM32 toothpick AIO keeps its own 3.3×3.3 N-FET + driver stage (DOY180N03T + NSG2065Q from OpenESC-20x20); AGM314MAP (3.3×3.3 complementary) is reserved for the mid-tier 2-4S Bluejay concepts (OpenAIO-Lite-HD/Analog concepts).**
 
 ### Revision 2: deeper sweep incl. DigiKey, SiA527DJ is the dual-package ceiling
 
@@ -169,7 +169,7 @@ All three imported into `whoop` lib (SIA527DJ-T1-GE3, AON2406, YJQ1216A); SiA527
 
 **Previous primary: DMC1229UFDB-7 (C443653, U-DFN2020-6, 2.0×2.0×0.6 mm)**, imported into `whoop` lib, datasheet local.
 - ±12 V, N 29 mΩ / P 61 mΩ max @4.5 V, spec'd down to 1.8 V gate (true logic-level, Vgs(th) max 1.0 V) → @3.3 V worst-case ≈ N 31 / P 70 mΩ
-- Id 5.6/−3.8 A cont, 20/−15 A pulsed; realistic on a dense whoop board: **~2.5 A cont / ~5 A seconds / 10 A+ pulses per phase**, matches 0802/1002 motor reality (2–5 A peaks)
+- Id 5.6/−3.8 A cont, 20/−15 A pulsed; realistic on a dense whoop board: **~2.5 A cont / ~5 A seconds / 10 A+ pulses per phase**, matches 0802/1002 motor reality (2-5 A peaks)
 - Smaller and thermally better (leadless, RθJC 30) than the SOT-23-6-class "EGX87C" parts on commercial 5 A whoop boards, not a downgrade
 - Caveat: 12 V Vds at 1S, fine with low-inductance layout + per-phase ceramic bypass; watch switching spikes on the bench
 - Stock: LCSC 2,280 + DigiKey backup; family stock swings hard → dual-source reels
@@ -180,7 +180,7 @@ Same-footprint variants (drop-in, U-DFN2020-6 Type B pinout): **DMC2041UFDB-7** 
 
 ## FET selection (superseded), AGM314MAP replaces AGM310MAP
 
-**AGM314MAP (C17701056)**, pinout verified IDENTICAL to AGM310MAP from both datasheets (Pin1=S1, G1/S2/G2 bottom row, D1/D2 pads; FET1=N 30V/10mΩ@10V/30A, FET2=P −30V/18.5mΩ@10V/−20A). Same PDFN3.3×3.3 package. Strictly better dies, ~3k LCSC stock (vs 166–515), **$0.074 @500 (35% cheaper)**. Imported into `whoop` lib; datasheet in `hardware/datasheets/` (local only, gitignored).
+**AGM314MAP (C17701056)**, pinout verified IDENTICAL to AGM310MAP from both datasheets (Pin1=S1, G1/S2/G2 bottom row, D1/D2 pads; FET1=N 30V/10mΩ@10V/30A, FET2=P −30V/18.5mΩ@10V/−20A). Same PDFN3.3×3.3 package. Strictly better dies, ~3k LCSC stock (vs 166-515), **$0.074 @500 (35% cheaper)**. Imported into `whoop` lib; datasheet in `hardware/datasheets/` (local only, gitignored).
 
 Caveat for direct 3.3 V drive: datasheet specs Rds at 10 V and 4.5 V only, N 16 mΩ typ / P 27 mΩ typ @ 4.5 V; Vgs(th) max 2.2 V means 3.3 V drive has only ~1.1 V overdrive worst-case. **Bench-verify Rds and switching at 3.3 V gate, 1S pack** before committing. (This is the same regime every CrazyBee-class board operates in.)
 
@@ -191,13 +191,13 @@ Second sources / hedges:
 
 ## What commercial whoop ESCs actually use (teardown research, verified)
 
-- **CrazyBee F4 V2 class (5–10 A 1S, the architecture we're copying)**: 12× N+P complementary pairs marked "EGX87C" (full MPN never decoded; sold as repair parts under the marking), **driven directly by EFM8 GPIO, no driver**, brushlesswhoop.com/anatomy-of-an-all-in-one-fc/
-- NewBeeDrone BLV1–4 / Hummingbird V2/V3: official replacement part is "N+P MOS" ×12, same topology, MPN undisclosed.
+- **CrazyBee F4 V2 class (5-10 A 1S, the architecture we're copying)**: 12× N+P complementary pairs marked "EGX87C" (full MPN never decoded; sold as repair parts under the marking), **driven directly by EFM8 GPIO, no driver**, brushlesswhoop.com/anatomy-of-an-all-in-one-fc/
+- NewBeeDrone BLV1-4 / Hummingbird V2/V3: official replacement part is "N+P MOS" ×12, same topology, MPN undisclosed.
 - **BetaFPV F4 1S 12A**: 12× Vishay SiZ322DT dual-N 25 V PowerPAK1212 (3.3×3.3), part is **EOL at DigiKey** (successor SiZ350DT ~$2); high-side drive scheme undocumented in any teardown. Don't copy.
 - NBD BLV5 / RaceSpec V2 "18A": "double N-channel", MPN undisclosed.
-- 20 A+ toothpick tier: Toshiba TPN2R203NC-class discrete N + FD6288 drivers, i.e. the OpenESC_20X20 architecture, irrelevant here.
+- 20 A+ toothpick tier: Toshiba TPN2R203NC-class discrete N + FD6288 drivers, i.e. the OpenESC-20x20 architecture, irrelevant here.
 - Bluejay layout naming note: the middle letter (Z_**H**_30, A_**X**_5) is the MCU family (H=BB21, X=BB51), NOT FET topology; only the deadtime digits hint at the stage.
 
 ## 1.8 V gyro LDO replacement (family-wide, DECIDED: TPS7A2018)
 
-**TPS7A2018PDQNR** (X2SON-4 1×1 mm, LCSC C2878130, only 42 pcs retail, DigiKey 25k @ $0.136 → consign; SOT-23-5 DBV C963430 with 25k LCSC stock as large-package alternate). Chosen over LP5912-1.8 on actual PSRR curves: 75 dB @ 10 kHz AND 100 kHz spec'd (LP5912 dips to ~58 dB right at the 20–30 kHz MEMS gyro drive band; the original NCV8187 collapsed to ~35 dB @ 300 kHz). Noise 7–10 µVrms. Trade-offs: PG pin lost (D8 LED net), new footprint, accepted, re-route was needed anyway. Keep a ferrite/RC pole ahead of the LDO for the ~1 MHz buck band where every candidate is ~45–50 dB. Imported into `whoop` lib here and `imports` lib in OpenAIO; full comparison table in OpenAIO `docs/SOURCING-2026-06.md`.
+**TPS7A2018PDQNR** (X2SON-4 1×1 mm, LCSC C2878130, only 42 pcs retail, DigiKey 25k @ $0.136 → consign; SOT-23-5 DBV C963430 with 25k LCSC stock as large-package alternate). Chosen over LP5912-1.8 on actual PSRR curves: 75 dB @ 10 kHz AND 100 kHz spec'd (LP5912 dips to ~58 dB right at the 20-30 kHz MEMS gyro drive band; the original NCV8187 collapsed to ~35 dB @ 300 kHz). Noise 7-10 µVrms. Trade-offs: PG pin lost (D8 LED net), new footprint, accepted, re-route was needed anyway. Keep a ferrite/RC pole ahead of the LDO for the ~1 MHz buck band where every candidate is ~45-50 dB. Imported into `whoop` lib here and `imports` lib in OpenAIO; full comparison table in OpenAIO `docs/SOURCING-2026-06.md`.
