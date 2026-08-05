@@ -1,73 +1,65 @@
 # OpenAIO-Whoop
 
-Open-source 25.5×25.5 mounting-pattern whoop AIO: flight controller + 4× Bluejay brushless ESC + ExpressLRS 2.4 GHz receiver, **digital video only** (SH1.0 6-pin HD-VTX port, no onboard analog VTX/OSD). Target: 1S/2S whoop class (65–85 mm).
+Open-source whoop-class AIO board with a 25.5 x 25.5 mm mounting pattern, part of the incutec OpenDrone line. One board combines an RP2354A flight controller, four Bluejay (EFM8BB51) brushless ESC channels, and a serial ExpressLRS 2.4 GHz receiver (ESP32-C3 + SX1281). Digital video only: SH1.0 6-pin HD-VTX port, no onboard analog VTX or OSD. Target class is 1S/2S whoops (65-85 mm). Designed in KiCad 10. Full design detail: [hardware/docs/DESIGN.md](hardware/docs/DESIGN.md).
 
-| Stage | Basis | Status |
-|---|---|---|
-| FC | OpenFC-Lite-Mini rev 2 sheets (RP2354A) | imported |
-| ESC | **new design** — EFM8BB51 (Bluejay BB51) + power stage TBD | parts imported, schematic not drawn |
-| RX | OpenRX-Lite (ESP32-C3 + SX1281, serial ELRS) | imported |
+## Status
 
-## Status — early design, no hardware
+**Prototype pending**, early design, 2026-08-05.
+Forked from OpenAIO and being adapted for whoop class. FC and RX schematic sheets are imported from sibling designs, ESC parts are selected and imported into the project libraries. The ESC channel sheet and the board layout still carry the inherited donor design, not the Bluejay whoop design. No hardware has been fabricated.
 
-This repo was forked from OpenAIO (toothpick AIO) and is being adapted for whoop class. Done so far: repo restructure, current FC/RX sheets imported, Bluejay ESC parts imported (`whoop` library: EFM8BB51F16G, AGM310MAP, BY25Q64ESCIG), datasheets pulled, market + sourcing research in `docs/`.
+## Specifications
 
-Open design decisions (see `docs/ESC_DESIGN.md`):
-- **Pack voltage: 1S vs 2S** — gates the entire ESC gate-drive topology and the BEC topology (1S needs a boost to feed an O4 Lite properly)
-- **ESC power stage**: AGM310MAP complementary P+N is a 5–8 A-class topology; the 2026 market floor is 12 A cont — N+N + driver alternative documented
-- Blackbox: BY25Q64 SPI NOR replaces the microSD slot (sheet still shows microSD until redrawn); BY25Q64ESCIG itself needs a substitute (stock = 1 pc)
-- ESC channel sheets (`esc_channel.kicad_sch` ×4) still contain the inherited AT32/AM32 toothpick channel — to be gutted and redrawn as EFM8BB51 + power stage
+| Parameter | Value |
+|---|---|
+| Class | 1S/2S whoop (65-85 mm) |
+| Mounting pattern | 25.5 x 25.5 mm |
+| FC | RP2354A, LSM6DSV16X IMU, Betaflight custom target |
+| ESC | 4x EFM8BB51 (Bluejay BB51), XR8G02M direct-drive P+N power stage |
+| RX | ESP32-C3 + SX1281, serial ExpressLRS 2.4 GHz |
+| Video | Digital only: SH1.0 6-pin HD-VTX port, no onboard VTX/OSD |
+| Blackbox | W25Q128JVPIQ 16 MB SPI NOR flash |
+
+Part-level detail (LCSC numbers, power stage rationale, second sources) is in [hardware/docs/DESIGN.md](hardware/docs/DESIGN.md).
 
 ## Repository layout
 
-```
-OpenAIO-Whoop/
-├── README.md  LICENSE
-├── docs/
-│   ├── ESC_DESIGN.md               ← Bluejay ESC topology research + sourcing
-│   └── MARKET-RESEARCH-2026-06.md  ← competitive landscape, both AIO classes
-└── hardware/
-    ├── OpenAIO-Whoop.kicad_pro / .kicad_sch / .kicad_pcb
-    ├── schematics/
-    │   ├── fc/      rp2350a, power, imu, blackbox, pads  (OpenFC-Lite-Mini rev2; no osd — digital only)
-    │   ├── esc/     esc_channel (×4 from root — inherited placeholder, to be redrawn)
-    │   └── elrs/    elrs                                  (OpenRX-Lite)
-    ├── lib.kicad_sym / lib.pretty / lib.3dshapes           ← FC library
-    ├── whoop.kicad_sym / whoop.pretty / whoop.3dshapes     ← Bluejay ESC parts
-    ├── components.kicad_sym / 4in1ESC.pretty / .3dshapes   ← ESC donor parts (INA186 etc.)
-    ├── OpenRX-Shared.kicad_sym / .pretty / .3dshapes       ← RX library
-    ├── sym-lib-table / fp-lib-table
-    └── datasheets/    FC/  ESC/  ELRS/
-```
-
-All libraries project-local; KiCad standard libs are the only external references. KiCad 10.
-
-## Key parts
-
-### Bluejay ESC (`whoop` library)
-| Function | Part | LCSC | Note |
-|---|---|---|---|
-| ESC MCU ×4 | EFM8BB51F16G-C-QFN20R (8051, 50 MHz) | C6547511 | Bluejay BB51 target; not in JLC assembly lib — verify/consign |
-| Power stage | XR8G02M complementary N+P, DFN2020-8 (2×2 mm), ×3/channel, GPIO direct drive | C42457203 | 20 V, N 15/P 25 mΩ max @4.5 V (spec'd to 2.5 V) — ~8 A cont/15 A+ burst per motor. Single-source brand: reel-order up front. 2nd source: SiA527DJ (C222486) |
-| 1.8 V gyro LDO | TPS7A2018PDQNR, X2SON-4 (1×1 mm) | C2878130 | 75 dB PSRR @10k–100 kHz; LCSC thin, consign from DigiKey |
-| Blackbox flash | W25Q128JVPIQ 128 Mbit SPI NOR, WSON-8 (5×6 mm) | C190862 | 16 MB = market bar (replaces dead BY25Q64) |
-| RX MCU option | ESP8685H4 (ESP32-C3 die, 4 MB flash), QFN-28 (4×4 mm) | C4944062 | 1 mm smaller each side than ESP32-C3FH4; same ELRS targets |
-
-### FC / RX (inherited from sibling designs)
-RP2354A, LSM6DSV16XTR, 2× LMR51430, TPS2116, LP5912, NCV8187 (**unobtainable — replace**), TF-021B microSD (to be replaced by SPI flash), ESP32-C3FH4 + SX1281 + TLV75533. Full tables in the OpenAIO repo README.
-
-## Firmware targets
-
-| Stage | Target |
+| Path | Contents |
 |---|---|
-| FC | Betaflight, derived from `OPENFC_LITE_MINI_RP2350A` (custom target) |
-| ESC ×4 | **Bluejay** BB51, 48 kHz (2S) / 96 kHz (1S), bidirectional DShot |
-| RX | ExpressLRS `Unified_ESP32C3_2400_RX` (survives in ELRS 4.0 targets) |
+| `hardware/` | KiCad 10 project: top sheet, sub-sheets, project-local libraries |
+| `hardware/docs/` | Design documentation ([DESIGN.md](hardware/docs/DESIGN.md), [ESC_DESIGN.md](hardware/docs/ESC_DESIGN.md), [MARKET-RESEARCH-2026-06.md](hardware/docs/MARKET-RESEARCH-2026-06.md)) |
+| `libs/KiCad-Library` | Shared Incutec symbol/footprint/3D library (git submodule) |
 
-## Competitive bar (2026)
+## Design entry points
 
-Reference: BetaFPV Matrix 1S 3IN1 HD ($50, 12A/18A Bluejay, serial ELRS, 5V/3A BEC, SH1.0 6-pin O4 port, 3.2 g). To match the class: 12 A cont ESC, 5V/3A holding to ~2.8 Vin, 25.5×25.5 mount, ≤3.5 g. Differentiators: open hardware, real blackbox flash, real current shunt + published scale, maintained BF target. Details: `docs/MARKET-RESEARCH-2026-06.md`.
+- Top schematic: `hardware/OpenAIO-Whoop.kicad_sch`
+- FC sheets: `hardware/schematics/fc/` (rp2350a, power, imu, blackbox, pads; from OpenFC-Lite-Mini rev 2, no OSD sheet)
+- ESC sheet: `hardware/schematics/esc/esc_channel.kicad_sch`, instantiated 4 times (inherited donor channel, not the Bluejay design)
+- RX sheet: `hardware/schematics/elrs/elrs.kicad_sch` (OpenRX-Lite)
+- Board: `hardware/OpenAIO-Whoop.kicad_pcb` (inherited OpenAIO layout, not reworked for this board)
+
+Project-local libraries: `hardware/lib.*` (FC), `hardware/whoop.*` (Bluejay ESC parts), `hardware/components.kicad_sym` with `hardware/4in1ESC.pretty` (ESC donor parts), `hardware/OpenRX-Shared.*` (RX). The project lib tables also reference the shared `Incutec` library from the `libs/KiCad-Library` submodule, used for new parts; KiCad standard libraries are the only other external references.
+
+## Build and export
+
+```
+git clone --recursive https://github.com/incutec-hw/OpenAIO-Whoop.git
+```
+
+Open `hardware/OpenAIO-Whoop.kicad_pro` in KiCad 10. Production exports (gerbers, BOM, CPL) are generated with the [KiCad Fabrication Toolkit](https://github.com/bennymeg/Fabrication-Toolkit) plugin into `hardware/production/` (gitignored). Headless checks use `kicad-cli`:
+
+```
+kicad-cli sch erc --exit-code-violations hardware/OpenAIO-Whoop.kicad_sch
+kicad-cli pcb drc --exit-code-violations hardware/OpenAIO-Whoop.kicad_pcb
+```
+
+## Manufacturing
+
+No production exports exist and no hardware has been fabricated. Revision history: [CHANGELOG.md](CHANGELOG.md).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-Hardware: [CERN-OHL-S-2.0](https://ohwr.org/cern_ohl_s_v2.txt). Firmware references upstream projects (Betaflight, Bluejay, ExpressLRS) under their respective licenses.
+Hardware licensed under [CERN-OHL-S-2.0](https://ohwr.org/cern_ohl_s_v2.txt). See [LICENSE](LICENSE). Referenced firmware projects (Betaflight, Bluejay, ExpressLRS) remain under their own upstream licenses.
