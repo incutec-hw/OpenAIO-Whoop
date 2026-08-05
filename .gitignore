@@ -23,3 +23,6 @@ gerbers/
 
 # Claude agent context (local only)
 CLAUDE.md
+
+# Datasheets (local only, not distributed)
+datasheets/
