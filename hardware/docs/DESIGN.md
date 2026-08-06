@@ -4,7 +4,7 @@ Detailed design description of the OpenAIO-Whoop. The design is early stage: par
 
 ## Architecture
 
-Three stages on one 25.5 x 25.5 mm board: flight controller, 4x brushless ESC, ExpressLRS receiver. Digital video only, so no analog VTX or OSD hardware.
+Three stages on one board with a 25.5 x 25.5 mm mounting pattern: flight controller, 4x brushless ESC, serial ExpressLRS 2.4 GHz receiver. Target class is 1S/2S whoops, 65-85 mm. Digital video only: an SH1.0 6-pin HD-VTX port, no analog VTX or OSD hardware.
 
 | Stage | Basis | State |
 |---|---|---|
@@ -18,7 +18,7 @@ Three stages on one 25.5 x 25.5 mm board: flight controller, 4x brushless ESC, E
 - ESC power stage is decided: XR8G02M, 2 x 2 mm complementary P+N, GPIO direct drive, no gate-driver IC, honest rating ~8 A continuous / 15-20 A burst per motor. The 12 A dual-N market tier is deliberately not pursued: dual-N needs high-side drive, excluded by the no-driver constraint. Earlier candidates (AGM310MAP, AGM314MAP, N+N plus driver) are superseded; full history in [ESC_DESIGN.md](ESC_DESIGN.md).
 - Blackbox: W25Q128JVPIQ 16 MB SPI NOR replaces the microSD slot and the dead BY25Q64; the blackbox sheet still shows the microSD slot until redrawn.
 - The ESC channel sheet (`esc_channel.kicad_sch`, instantiated 4x) still contains the inherited AT32/AM32 donor channel from the OpenESC lineage, not the EFM8BB51 + XR8G02M design.
-- The board file (`OpenAIO-Whoop.kicad_pcb`) carries the inherited OpenAIO placement and routing, not a whoop layout.
+- The board file (`OpenAIO-Whoop.kicad_pcb`) carries the inherited OpenAIO placement and routing, not a whoop layout. Its Edge.Cuts outline is still the donor 33 x 33 mm rounded rectangle around the 25.5 x 25.5 mm hole pattern; no whoop outline has been drawn.
 - The 1.8 V gyro LDO on the inherited FC sheets, NCV8187 (effectively unobtainable), is replaced by TPS7A2018 (decided, imported); the sheets still show NCV8187.
 
 ## Key parts, Bluejay ESC (`whoop` library)
@@ -45,7 +45,7 @@ RP2354A, LSM6DSV16XTR, 2x LMR51430, TPS2116, LP5912, NCV8187 (superseded by TPS7
 
 ## Market reference
 
-Class reference board: BetaFPV Matrix 1S 3IN1 HD ($50, 12A/18A Bluejay, serial ELRS, 5V/3A BEC, SH1.0 6-pin O4 port, 3.2 g). Class bar: 12 A continuous ESC rating, 5V/3A BEC holding to ~2.8 V input, 25.5 x 25.5 mount, 3.5 g or less. Full landscape and verified trends: [MARKET-RESEARCH-2026-06.md](MARKET-RESEARCH-2026-06.md).
+Class reference board: BetaFPV Matrix 1S 3IN1 HD. Its specification, the class bar it sets, the full whoop-class table and the verified 2025-2026 trends: [MARKET-RESEARCH-2026-06.md](MARKET-RESEARCH-2026-06.md).
 
 ## Revisions
 

@@ -76,4 +76,4 @@ Notes: BetaFPV FC mount stays 26×26 M1.4 through the Matrix II generation (veri
 
 **OpenAIO (vs HDZero Gamma):** open hardware + published schematics/repair diagrams, microSD blackbox, analog OSD option, honest measured current ratings, per-channel SWD rescue pads, maintained BF target every release cycle.
 
-**OpenAIO-Whoop (vs Matrix 3IN1 HD):** open hardware, 64 Mbit+ blackbox flash (most 1S boards have none), real shunt + published current scale, ELRS antenna options, guaranteed-updated target. Must match: 12 A Bluejay BB51, 5V/3A to 2.8 Vin, SH1.0 6-pin O4 port, 25.5×25.5, ≤3.5 g.
+**OpenAIO-Whoop (vs Matrix 3IN1 HD):** open hardware, 16 MB (128 Mbit) blackbox flash (most 1S boards have none), real shunt + published current scale, ELRS antenna options, guaranteed-updated target. Class bar to meet: Bluejay BB51, 5V/3A holding to 2.8 Vin, SH1.0 6-pin O4 port, 25.5×25.5 mount, ≤3.5 g. On ESC current the class bar is 12 A; we deliberately publish ~8 A cont / 15-20 A burst per motor instead, because the no-gate-driver topology cannot reach 12 A honestly, see [DESIGN.md](DESIGN.md).
