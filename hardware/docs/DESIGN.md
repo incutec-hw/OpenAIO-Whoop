@@ -46,3 +46,9 @@ RP2354A, LSM6DSV16XTR, 2x LMR51430, TPS2116, LP5912, NCV8187 (superseded by TPS7
 ## Market reference
 
 Class reference board: BetaFPV Matrix 1S 3IN1 HD ($50, 12A/18A Bluejay, serial ELRS, 5V/3A BEC, SH1.0 6-pin O4 port, 3.2 g). Class bar: 12 A continuous ESC rating, 5V/3A BEC holding to ~2.8 V input, 25.5 x 25.5 mount, 3.5 g or less. Full landscape and verified trends: [MARKET-RESEARCH-2026-06.md](MARKET-RESEARCH-2026-06.md).
+
+## Revisions
+
+- **2026-08-04**: shared Incutec KiCad library wired in as the `libs/KiCad-Library` submodule.
+- **2026-06-12**: ESC part selection: XR8G02M power stage (SiA527DJ second source), no-gate-driver topology locked, W25Q128JVPIQ blackbox flash, TPS7A2018 gyro LDO. Repo restructured under `hardware/`; FC and RX sheets imported; Bluejay part libraries and research docs added.
+- **2026-06-01**: forked from OpenAIO as the whoop-class variant.
