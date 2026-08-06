@@ -54,7 +54,7 @@ kicad-cli pcb drc --exit-code-violations hardware/OpenAIO-Whoop.kicad_pcb
 
 ## Manufacturing
 
-No production exports exist and no hardware has been fabricated. Revision history: [CHANGELOG.md](CHANGELOG.md).
+No production exports exist and no hardware has been fabricated.
 
 ## Contributing
 
